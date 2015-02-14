@@ -108,14 +108,14 @@ public class RedisUtil {
 	 * @return
 	 */
 	public static boolean checkList(List<String> keyList, List<String> valueList) {
-		Assert.notEmpty(keyList, "参数keyList不能为空.");
-		Assert.notEmpty(valueList, "参数valueList不能为空.");
-		// if (keyList == null || keyList.isEmpty()) {
-		// throw new IllegalArgumentException("参数keyList不能为空.");
-		// }
-		// if (valueList == null || valueList.isEmpty()) {
-		// throw new IllegalArgumentException("参数valueList不能为空.");
-		// }
+//		Assert.notEmpty(keyList, "参数keyList不能为空.");
+//		Assert.notEmpty(valueList, "参数valueList不能为空.");
+		 if (keyList == null || keyList.isEmpty()) {
+		 throw new IllegalArgumentException("参数keyList不能为空.");
+		 }
+		 if (valueList == null || valueList.isEmpty()) {
+		 throw new IllegalArgumentException("参数valueList不能为空.");
+		 }
 		if (keyList.size() != valueList.size()) {
 			throw new IllegalArgumentException("参数keyList和valueList长度不一致.");
 		}
