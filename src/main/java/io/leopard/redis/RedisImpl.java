@@ -1,8 +1,8 @@
 package io.leopard.redis;
 
-import io.leopard.data4j.redis.util.IJedisPool;
-import io.leopard.data4j.redis.util.RedisBackup;
-import io.leopard.data4j.redis.util.RedisUtil;
+import io.leopard.redis.util.IJedisPool;
+import io.leopard.redis.util.RedisBackup;
+import io.leopard.redis.util.RedisUtil;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

@@ -1,6 +1,6 @@
 package io.leopard.redis;
 
-import io.leopard.data4j.redis.util.IJedisPool;
+import io.leopard.redis.util.IJedisPool;
 
 import java.util.List;
 import java.util.Set;
