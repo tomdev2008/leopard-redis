@@ -7,10 +7,9 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.util.StringUtils;
 
 /**
  * redis备份.
@@ -53,9 +52,10 @@ public class RedisBackup {
 	 * @return
 	 */
 	protected int getInterval() {
-		if (SystemUtils.IS_OS_WINDOWS) {
-			return 2;
-		}
+		// TODO 未实现
+		// if (SystemUtils.IS_OS_WINDOWS) {
+		// return 2;
+		// }
 		return 10 * 60;
 	}
 

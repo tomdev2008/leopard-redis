@@ -19,8 +19,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.StringUtils;
+import org.springframework.util.StringUtils;
 
 import redis.clients.jedis.BinaryClient.LIST_POSITION;
 import redis.clients.jedis.Jedis;
@@ -58,11 +57,11 @@ public class RedisMemoryImpl implements Redis {
 	@Override
 	public Long append(String key, String value) {
 		String current = this.get(key);
-		current = StringUtils.defaultString(current);
+		current = current == null ? "" : current;
 		String str = current + value;
 		this.set(key, str);
 		return (long) str.length();
-		// throw new NotImplementedException();
+		// throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
@@ -100,7 +99,7 @@ public class RedisMemoryImpl implements Redis {
 
 	@Override
 	public Long ttl(String key) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
@@ -147,7 +146,7 @@ public class RedisMemoryImpl implements Redis {
 
 	@Override
 	public Long zadd(String key, Map<String, Double> scoreMembers) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
@@ -177,25 +176,25 @@ public class RedisMemoryImpl implements Redis {
 
 	@Override
 	public String type(String key) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
 	@Override
 	public Long expireAt(String key, long unixTime) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
 	@Override
 	public Boolean setbit(String key, long offset, boolean value) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
 	@Override
 	public Boolean getbit(String key, long offset) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
@@ -209,7 +208,7 @@ public class RedisMemoryImpl implements Redis {
 		if (startOffset < 0) {
 			startOffset = value.length() + startOffset;
 		}
-		// throw new NotImplementedException();
+		// throw new UnsupportedOperationException("Not Implemented");
 		if (endOffset == -1) {
 			return value.substring((int) startOffset);
 		}
@@ -249,7 +248,7 @@ public class RedisMemoryImpl implements Redis {
 
 	@Override
 	public String substr(String key, int start, int end) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
@@ -424,13 +423,13 @@ public class RedisMemoryImpl implements Redis {
 
 	@Override
 	public List<String> sort(String key) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
 	@Override
 	public List<String> sort(String key, SortingParams sortingParameters) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
@@ -541,7 +540,7 @@ public class RedisMemoryImpl implements Redis {
 
 	@Override
 	public Long linsert(String key, LIST_POSITION where, String pivot, String value) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
@@ -557,13 +556,13 @@ public class RedisMemoryImpl implements Redis {
 
 	@Override
 	public IJedisPool getJedisPool() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
 	@Override
 	public Jedis getResource() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
@@ -576,7 +575,7 @@ public class RedisMemoryImpl implements Redis {
 
 	@Override
 	public boolean rename(String oldkey, String newkey) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
@@ -596,7 +595,7 @@ public class RedisMemoryImpl implements Redis {
 
 	@Override
 	public Transaction multi() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
@@ -614,25 +613,25 @@ public class RedisMemoryImpl implements Redis {
 
 	@Override
 	public RedisInfo info() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
 	@Override
 	public boolean rename(String oldkey, String newkey, int seconds) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
 	@Override
 	public long getUsedMemory() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
 	@Override
 	public long dbSize() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
@@ -653,13 +652,13 @@ public class RedisMemoryImpl implements Redis {
 
 	@Override
 	public boolean append(List<String> keyList, List<String> valueList, int seconds) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
 	@Override
 	public void returnResource(Jedis jedis) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
@@ -684,7 +683,7 @@ public class RedisMemoryImpl implements Redis {
 
 	@Override
 	public Set<String> keys(String pattern) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
@@ -694,7 +693,7 @@ public class RedisMemoryImpl implements Redis {
 
 	@Override
 	public String getServerInfo() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
@@ -755,61 +754,61 @@ public class RedisMemoryImpl implements Redis {
 
 	@Override
 	public Object evalsha(String script) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
 	@Override
 	public Object eval(String script) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
 	@Override
 	public Object eval(String script, int keyCount, String... params) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
 	@Override
 	public Object evalsha(String sha1, List<String> keys, List<String> args) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
 	@Override
 	public Object evalsha(String sha1, int keyCount, String... params) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
 	@Override
 	public String evalReturnSha(String script) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
 	@Override
 	public Object evalAssertSha(String sha, String script) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
 	@Override
 	public String bgrewriteaof() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
 	@Override
 	public String bgsave() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
 	@Override
 	public String save() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
@@ -833,7 +832,7 @@ public class RedisMemoryImpl implements Redis {
 
 	@Override
 	public void psubscribe(JedisPubSub jedisPubSub, String... patterns) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 
 	}
 
@@ -849,112 +848,112 @@ public class RedisMemoryImpl implements Redis {
 
 	@Override
 	public String randomKey() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Long persist(String key) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Boolean setbit(String key, long offset, String value) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Long strlen(String key) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Long lpushx(String key, String... string) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Long rpushx(String key, String... string) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public List<String> blpop(String arg) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public List<String> brpop(String arg) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public String echo(String string) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Long move(String key, int dbIndex) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Long bitcount(String key) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Long bitcount(String key, long start, long end) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public ScanResult<Entry<String, String>> hscan(String key, int cursor) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public ScanResult<String> sscan(String key, int cursor) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public ScanResult<Tuple> zscan(String key, int cursor) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public ScanResult<Entry<String, String>> hscan(String key, String cursor) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public ScanResult<String> sscan(String key, String cursor) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public ScanResult<Tuple> zscan(String key, String cursor) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Long pfadd(String key, String... elements) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public long pfcount(String key) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public String set(String key, String arg1, String arg2, String arg3, long arg4) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public List<String> srandmember(String key, int count) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 }

@@ -16,8 +16,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang.NotImplementedException;
-
 import redis.clients.jedis.Tuple;
 import redis.clients.jedis.ZParams;
 
@@ -456,10 +454,10 @@ public class RedisSortedSetImpl implements IRedisSortedSet {
 			}
 		}
 		else if (aggregate == ZParams.Aggregate.MAX) {
-			throw new NotImplementedException();
+			throw new UnsupportedOperationException("Not Implemented");
 		}
 		else if (aggregate == ZParams.Aggregate.MIN) {
-			throw new NotImplementedException();
+			throw new UnsupportedOperationException("Not Implemented");
 		}
 		else {
 			throw new IllegalArgumentException("未知类型[" + aggregate + "].");
@@ -524,7 +522,7 @@ public class RedisSortedSetImpl implements IRedisSortedSet {
 
 	@Override
 	public Long zadd(String key, Map<Double, String> scoreMembers) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override

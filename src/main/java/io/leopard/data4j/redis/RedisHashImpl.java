@@ -8,8 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.StringUtils;
+import org.springframework.util.StringUtils;
 
 import redis.clients.jedis.BinaryClient.LIST_POSITION;
 import redis.clients.jedis.Jedis;
@@ -34,8 +33,6 @@ public class RedisHashImpl extends AbstractRedis implements Redis {
 
 	protected HashType hashType;
 
-	protected boolean log;
-
 	public void setServerList(String[] serverList) {
 		// System.out.println("serverList:" + StringUtils.join(serverList,","));
 		this.serverList = serverList;
@@ -43,10 +40,6 @@ public class RedisHashImpl extends AbstractRedis implements Redis {
 
 	public Redis[] getRedisList() {
 		return redisList;
-	}
-
-	public void setLog(boolean log) {
-		this.log = log;
 	}
 
 	/**
@@ -105,22 +98,10 @@ public class RedisHashImpl extends AbstractRedis implements Redis {
 	}
 
 	protected Redis initRedis(String server) {
-		if (log) {
-			RedisLog4jImpl redis = new RedisLog4jImpl();
-			redis.setServer(server);
-			redis.setTimeout(timeout);
-			redis.setMaxActive(maxActive);
-			redis.setInitialPoolSize(this.initialPoolSize);
-			redis.setEnableBackup(enableBackup);
-			redis.setBackupTime(this.backupTime);
-			redis.init();
-			return redis;
-		}
-		else {
-			RedisImpl redis = new RedisImpl(server, maxActive, initialPoolSize, enableBackup, backupTime, timeout);
-			redis.init();
-			return redis;
-		}
+		RedisImpl redis = new RedisImpl(server, maxActive, initialPoolSize, enableBackup, backupTime, timeout);
+		redis.init();
+		return redis;
+
 	}
 
 	@Override
@@ -607,7 +588,7 @@ public class RedisHashImpl extends AbstractRedis implements Redis {
 
 	@Override
 	public Jedis getResource() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
@@ -617,7 +598,7 @@ public class RedisHashImpl extends AbstractRedis implements Redis {
 
 	@Override
 	public boolean rename(String oldkey, String newkey) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
@@ -637,32 +618,32 @@ public class RedisHashImpl extends AbstractRedis implements Redis {
 
 	@Override
 	public Transaction multi() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public boolean flushDB() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public RedisInfo info() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public boolean rename(String oldkey, String newkey, int seconds) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public long getUsedMemory() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public long dbSize() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
@@ -672,17 +653,17 @@ public class RedisHashImpl extends AbstractRedis implements Redis {
 
 	@Override
 	public boolean flushAll() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public boolean set(List<String> keyList, List<String> valueList) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public boolean append(List<String> keyList, List<String> valueList, int seconds) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
@@ -701,7 +682,7 @@ public class RedisHashImpl extends AbstractRedis implements Redis {
 
 	@Override
 	public void returnResource(Jedis jedis) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
@@ -716,27 +697,27 @@ public class RedisHashImpl extends AbstractRedis implements Redis {
 
 	@Override
 	public Long zinterstore(String dstkey, String... sets) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Long zinterstore(String dstkey, ZParams params, String... sets) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Set<String> keys(String pattern) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Long zunionstore(String dstkey, String... sets) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public String getServerInfo() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	// @Override
@@ -781,12 +762,12 @@ public class RedisHashImpl extends AbstractRedis implements Redis {
 
 	@Override
 	public Set<String> zunionStoreInJava(String... sets) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Set<String> zunionStoreByScoreInJava(double min, double max, String... sets) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	// @Override
@@ -796,192 +777,192 @@ public class RedisHashImpl extends AbstractRedis implements Redis {
 
 	@Override
 	public Object evalsha(String script) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Object eval(String script) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Object eval(String script, int keyCount, String... params) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Object evalsha(String sha1, List<String> keys, List<String> args) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Object evalsha(String sha1, int keyCount, String... params) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	// @Override
 	// public Ludis getLudis() {
-	// throw new NotImplementedException();
+	// throw new UnsupportedOperationException("Not Implemented");
 	// }
 
 	@Override
 	public String evalReturnSha(String script) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Object evalAssertSha(String sha, String script) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public String bgrewriteaof() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public String bgsave() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public String save() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public IJedisPool getJedisPool() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Long publish(String channel, String message) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public void psubscribe(JedisPubSub jedisPubSub, String... patterns) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public void subscribe(JedisPubSub jedisPubSub, String... channels) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Set<String> sdiff(String... keys) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Long zunionstore(String dstkey, ZParams params, String... sets) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public String randomKey() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Long persist(String key) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Boolean setbit(String key, long offset, String value) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Long strlen(String key) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Long lpushx(String key, String... string) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Long rpushx(String key, String... string) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public List<String> blpop(String arg) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public List<String> brpop(String arg) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public String echo(String string) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Long move(String key, int dbIndex) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Long bitcount(String key) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Long bitcount(String key, long start, long end) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public ScanResult<Entry<String, String>> hscan(String key, int cursor) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public ScanResult<String> sscan(String key, int cursor) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public ScanResult<Tuple> zscan(String key, int cursor) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public ScanResult<Entry<String, String>> hscan(String key, String cursor) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public ScanResult<String> sscan(String key, String cursor) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public ScanResult<Tuple> zscan(String key, String cursor) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public Long pfadd(String key, String... elements) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public long pfcount(String key) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public String set(String key, String arg1, String arg2, String arg3, long arg4) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override

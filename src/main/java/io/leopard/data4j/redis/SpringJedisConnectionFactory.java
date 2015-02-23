@@ -1,7 +1,7 @@
 package io.leopard.data4j.redis;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.util.StringUtils;
 
 public class SpringJedisConnectionFactory extends JedisConnectionFactory {
 

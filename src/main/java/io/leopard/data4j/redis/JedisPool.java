@@ -1,7 +1,7 @@
 package io.leopard.data4j.redis;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.pool2.impl.AbandonedConfig;
+import org.springframework.util.StringUtils;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPoolConfig;

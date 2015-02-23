@@ -1,6 +1,5 @@
 package io.leopard.data4j.redis.util;
 
-import org.apache.commons.lang.SystemUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -20,12 +19,12 @@ public class RedisBackupTest {
 
 	@Test
 	public void getInterval() {
-		if (SystemUtils.IS_OS_WINDOWS) {
-			Assert.assertEquals(2, redisBackup.getInterval());
-		}
-		else {
-			Assert.assertEquals(10 * 60, redisBackup.getInterval());
-		}
+		// if (SystemUtils.IS_OS_WINDOWS) {
+		// Assert.assertEquals(2, redisBackup.getInterval());
+		// }
+		// else {
+		Assert.assertEquals(10 * 60, redisBackup.getInterval());
+		// }
 	}
 
 	// @Test
@@ -58,10 +57,10 @@ public class RedisBackupTest {
 
 	}
 
-//	@Test
-//	public void isEnabled() {
-//		Assert.assertTrue(this.redisBackup.isEnabled());
-//	}
+	// @Test
+	// public void isEnabled() {
+	// Assert.assertTrue(this.redisBackup.isEnabled());
+	// }
 
 	@Test
 	public void start() {

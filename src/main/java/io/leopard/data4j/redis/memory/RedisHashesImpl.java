@@ -9,8 +9,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang.math.NumberUtils;
-
 public class RedisHashesImpl implements IRedisHashes {
 	private Map<String, Map<String, String>> data = new ConcurrentHashMap<String, Map<String, String>>();
 
@@ -72,11 +70,9 @@ public class RedisHashesImpl implements IRedisHashes {
 	@Override
 	public Long hincrBy(String key, String field, long value) {
 		String oldValue = this.hget(key, field);
-
-		long num = NumberUtils.toLong(oldValue);
+		long num = oldValue == null ? Long.parseLong(oldValue) : 0;
 		num = num + value;
 		this.hset(key, field, Long.toString(num));
-		// System.out.println(" oldValue:" + oldValue + " num:" + num);
 		return num;
 	}
 

@@ -15,9 +15,6 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.SystemUtils;
-
 import redis.clients.jedis.BinaryClient.LIST_POSITION;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
@@ -117,9 +114,10 @@ public class RedisImpl extends AbstractRedis implements Redis {
 			return;
 		}
 		// windows环境关闭初始化默认redis连接功能?
-		if (SystemUtils.IS_OS_WINDOWS) {
-			return;
-		}
+		// TODO 未实现
+		// if (SystemUtils.IS_OS_WINDOWS) {
+		// return;
+		// }
 		int size;
 		if (this.initialPoolSize > this.maxActive) {
 			size = this.maxActive;
@@ -3587,7 +3585,7 @@ public class RedisImpl extends AbstractRedis implements Redis {
 	@Override
 	public ScanResult<Entry<String, String>> hscan(final String key, final int cursor) {
 		// int cursor有bug
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 		// return (ScanResult<Entry<String, String>>) this.execute(new Invoker()
 		// {
 		// @SuppressWarnings("deprecation")
@@ -3612,7 +3610,7 @@ public class RedisImpl extends AbstractRedis implements Redis {
 	@Override
 	public ScanResult<String> sscan(final String key, final int cursor) {
 		// int cursor有bug
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 		// return (ScanResult<String>) this.execute(new Invoker() {
 		// @Override
 		// public Object execute(Jedis jedis) {
@@ -3624,7 +3622,7 @@ public class RedisImpl extends AbstractRedis implements Redis {
 	@Override
 	public ScanResult<Tuple> zscan(final String key, final int cursor) {
 		// int cursor有bug
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 		// return (ScanResult<Tuple>) this.execute(new Invoker() {
 		// @Override
 		// public Object execute(Jedis jedis) {
@@ -3657,17 +3655,17 @@ public class RedisImpl extends AbstractRedis implements Redis {
 
 	@Override
 	public Long pfadd(String key, String... elements) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public long pfcount(String key) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
 	public String set(String key, String arg1, String arg2, String arg3, long arg4) {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@PreDestroy

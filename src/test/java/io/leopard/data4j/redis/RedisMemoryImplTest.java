@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +36,7 @@ public class RedisMemoryImplTest {
 			redis.returnResource(null);
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -54,14 +52,14 @@ public class RedisMemoryImplTest {
 			redis.rename("oldkey", "newkey");
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 		try {
 			redis.rename("oldkey", "newkey", 1);
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -80,7 +78,6 @@ public class RedisMemoryImplTest {
 		this.redis.set(key, "value");
 		Assert.assertEquals("value", this.redis.get(key));
 
-		
 		List<String> keyList = new ArrayList<String>();
 		keyList.add("key1");
 		keyList.add("key2");
@@ -88,7 +85,7 @@ public class RedisMemoryImplTest {
 		List<String> valueList = new ArrayList<String>();
 		valueList.add("value1");
 		valueList.add("value2");
-		
+
 		// List<String> keyList = ListUtil.makeList("key1,key2");
 		// List<String> valueList = ListUtil.makeList("value1,value2");
 		redis.set(keyList, valueList);
@@ -496,7 +493,7 @@ public class RedisMemoryImplTest {
 			redis.zadd(key, (Map<String, Double>) null);
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -626,7 +623,7 @@ public class RedisMemoryImplTest {
 			redis.append((List<String>) null, (List<String>) null, 1);
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -654,7 +651,7 @@ public class RedisMemoryImplTest {
 			redis.dbSize();
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -665,7 +662,7 @@ public class RedisMemoryImplTest {
 			redis.getUsedMemory();
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -676,7 +673,7 @@ public class RedisMemoryImplTest {
 			redis.info();
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -687,7 +684,7 @@ public class RedisMemoryImplTest {
 			redis.multi();
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -698,7 +695,7 @@ public class RedisMemoryImplTest {
 			redis.getResource();
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -709,7 +706,7 @@ public class RedisMemoryImplTest {
 			redis.getJedisPool();
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -720,7 +717,7 @@ public class RedisMemoryImplTest {
 			redis.linsert(key, null, "pivot", "value");
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -731,14 +728,14 @@ public class RedisMemoryImplTest {
 			redis.sort(key);
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 		try {
 			redis.sort(key, null);
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -749,7 +746,7 @@ public class RedisMemoryImplTest {
 			redis.type(key);
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -760,7 +757,7 @@ public class RedisMemoryImplTest {
 			redis.expireAt(key, 1);
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -771,7 +768,7 @@ public class RedisMemoryImplTest {
 			redis.setbit(key, 1, true);
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -782,7 +779,7 @@ public class RedisMemoryImplTest {
 			redis.getbit(key, 1);
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -863,7 +860,7 @@ public class RedisMemoryImplTest {
 			redis.substr(key, 0, 1);
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -874,14 +871,14 @@ public class RedisMemoryImplTest {
 			redis.eval("script");
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 		try {
 			redis.eval("script", 1, "params");
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -892,21 +889,21 @@ public class RedisMemoryImplTest {
 			redis.evalsha("script");
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 		try {
 			redis.evalsha("sha1", 1, "params");
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 		try {
 			redis.evalsha("sha1", (List<String>) null, (List<String>) null);
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -917,7 +914,7 @@ public class RedisMemoryImplTest {
 			redis.evalReturnSha("script");
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -928,7 +925,7 @@ public class RedisMemoryImplTest {
 			redis.evalAssertSha("sha", "script");
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -939,7 +936,7 @@ public class RedisMemoryImplTest {
 			redis.bgrewriteaof();
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -950,7 +947,7 @@ public class RedisMemoryImplTest {
 			redis.save();
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -975,7 +972,7 @@ public class RedisMemoryImplTest {
 			redis.psubscribe(null, "patterns");
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -986,7 +983,7 @@ public class RedisMemoryImplTest {
 			redis.bgsave();
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -997,7 +994,7 @@ public class RedisMemoryImplTest {
 			redis.getServerInfo();
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -1030,7 +1027,7 @@ public class RedisMemoryImplTest {
 			redis.ttl(key);
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}
@@ -1051,7 +1048,7 @@ public class RedisMemoryImplTest {
 			redis.keys("pattern");
 			Assert.fail("怎么没有抛异常?");
 		}
-		catch (NotImplementedException e) {
+		catch (UnsupportedOperationException e) {
 
 		}
 	}

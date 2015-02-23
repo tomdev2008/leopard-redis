@@ -3,9 +3,6 @@ package io.leopard.data4j.redis.memory;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
-
 public class RedisStringImpl implements IRedisString {
 	private Map<String, String> data = new ConcurrentHashMap<String, String>();
 	private Map<String, Long> expire = new ConcurrentHashMap<String, Long>();
@@ -51,7 +48,8 @@ public class RedisStringImpl implements IRedisString {
 	@Override
 	public Long decrBy(String key, long integer) {
 		String value = this.get(key);
-		long num = NumberUtils.toLong(value);
+		// long num = NumberUtils.toLong(value);
+		long num = value == null ? Long.parseLong(value) : 0;
 		num -= integer;
 		this.set(key, Long.toString(num));
 		return num;
@@ -65,7 +63,8 @@ public class RedisStringImpl implements IRedisString {
 	@Override
 	public Long incrBy(String key, long integer) {
 		String value = this.get(key);
-		long num = NumberUtils.toLong(value);
+		// long num = NumberUtils.toLong(value);
+		long num = value == null ? Long.parseLong(value) : 0;
 		num += integer;
 		this.set(key, Long.toString(num));
 		return num;
@@ -108,7 +107,7 @@ public class RedisStringImpl implements IRedisString {
 	@Override
 	public Long setrange(String key, long offset, String value) {
 		String oldValue = this.get(key);
-		oldValue = StringUtils.defaultString(oldValue);
+		oldValue = oldValue == null ? "" : oldValue;
 		StringBuilder sb = new StringBuilder(oldValue);
 		if (true) {
 			int diff = (int) (offset - sb.length());
