@@ -1,7 +1,7 @@
-package io.leopard.data4j.redis.pool;
+package io.leopard.redis.pool;
 
-import io.leopard.data4j.redis.util.JedisPoolApacheImpl;
 import io.leopard.redis.JedisPool;
+import io.leopard.redis.util.JedisPoolApacheImpl;
 
 import org.junit.Test;
 import org.mockito.Mockito;

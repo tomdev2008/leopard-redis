@@ -1,4 +1,6 @@
-package io.leopard.data4j.redis.memory;
+package io.leopard.redis.memory;
+
+import io.leopard.redis.memory.RedisStringImpl;
 
 import org.junit.Assert;
 import org.junit.Test;

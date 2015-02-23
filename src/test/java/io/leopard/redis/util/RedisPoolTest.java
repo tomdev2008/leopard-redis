@@ -1,4 +1,6 @@
-package io.leopard.data4j.redis.util;
+package io.leopard.redis.util;
+
+import io.leopard.redis.util.RedisPool;
 
 import org.junit.Assert;
 import org.junit.Test;

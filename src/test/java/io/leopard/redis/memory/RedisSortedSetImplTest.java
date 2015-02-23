@@ -1,4 +1,4 @@
-package io.leopard.data4j.redis.memory;
+package io.leopard.redis.memory;
 
 import org.junit.Test;
 

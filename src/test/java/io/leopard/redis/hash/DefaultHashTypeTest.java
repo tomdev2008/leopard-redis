@@ -1,4 +1,4 @@
-package io.leopard.data4j.redis.hash;
+package io.leopard.redis.hash;
 
 import io.leopard.redis.DefaultHashType;
 

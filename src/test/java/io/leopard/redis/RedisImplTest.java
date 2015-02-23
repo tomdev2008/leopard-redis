@@ -7,9 +7,9 @@
 
 package io.leopard.redis;
 
-import io.leopard.data4j.redis.util.RedisFactory;
-import io.leopard.data4j.redis.util.RedisUtil;
 import io.leopard.redis.RedisImpl;
+import io.leopard.redis.util.RedisFactory;
+import io.leopard.redis.util.RedisUtil;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
