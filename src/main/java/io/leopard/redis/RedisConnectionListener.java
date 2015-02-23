@@ -1,4 +1,4 @@
-package io.leopard.data4j.redis;
+package io.leopard.redis;
 
 import org.apache.commons.pool2.impl.GenericObjectPool;
 

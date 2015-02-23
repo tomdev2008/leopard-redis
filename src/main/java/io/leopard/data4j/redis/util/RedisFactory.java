@@ -1,6 +1,6 @@
 package io.leopard.data4j.redis.util;
 
-import io.leopard.data4j.redis.RedisImpl;
+import io.leopard.redis.RedisImpl;
 
 public class RedisFactory {
 

@@ -1,4 +1,7 @@
-package io.leopard.data4j.redis;
+package io.leopard.redis;
+
+import io.leopard.redis.JedisPool;
+import io.leopard.redis.RedisConnectionListener;
 
 import org.junit.Test;
 import org.mockito.Mockito;

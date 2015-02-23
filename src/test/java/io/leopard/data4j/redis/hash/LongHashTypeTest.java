@@ -1,6 +1,6 @@
 package io.leopard.data4j.redis.hash;
 
-import io.leopard.data4j.redis.LongHashType;
+import io.leopard.redis.LongHashType;
 
 import org.junit.Assert;
 import org.junit.Test;

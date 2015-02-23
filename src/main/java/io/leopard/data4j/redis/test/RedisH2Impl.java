@@ -3,10 +3,10 @@ package io.leopard.data4j.redis.test;
 import io.leopard.autounit.unitdb.DatabaseScriptImpl;
 import io.leopard.autounit.unitdb.H2Util;
 import io.leopard.autounit.unitdb.UnitdbH2Impl;
-import io.leopard.data4j.redis.Redis;
-import io.leopard.data4j.redis.RedisInfo;
 import io.leopard.data4j.redis.util.IJedisPool;
 import io.leopard.data4j.redis.util.RedisUtil;
+import io.leopard.redis.Redis;
+import io.leopard.redis.RedisInfo;
 
 import java.util.ArrayList;
 import java.util.Date;

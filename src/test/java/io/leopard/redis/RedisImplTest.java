@@ -5,10 +5,11 @@
  * Created : 04/10/2013
  */
 
-package io.leopard.data4j.redis;
+package io.leopard.redis;
 
 import io.leopard.data4j.redis.util.RedisFactory;
 import io.leopard.data4j.redis.util.RedisUtil;
+import io.leopard.redis.RedisImpl;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;

@@ -1,4 +1,4 @@
-package io.leopard.data4j.redis;
+package io.leopard.redis;
 
 import java.util.List;
 import java.util.Map;

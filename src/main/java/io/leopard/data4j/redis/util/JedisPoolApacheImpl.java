@@ -1,6 +1,6 @@
 package io.leopard.data4j.redis.util;
 
-import io.leopard.data4j.redis.JedisPool;
+import io.leopard.redis.JedisPool;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPoolConfig;
 

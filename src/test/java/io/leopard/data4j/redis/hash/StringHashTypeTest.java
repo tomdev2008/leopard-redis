@@ -1,6 +1,6 @@
 package io.leopard.data4j.redis.hash;
 
-import io.leopard.data4j.redis.StringHashType;
+import io.leopard.redis.StringHashType;
 
 import org.junit.Assert;
 import org.junit.Test;

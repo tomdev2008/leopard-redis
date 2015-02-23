@@ -1,6 +1,6 @@
 package io.leopard.data4j.redis.util;
 
-import io.leopard.data4j.redis.Redis;
+import io.leopard.redis.Redis;
 
 import java.util.Calendar;
 import java.util.Date;

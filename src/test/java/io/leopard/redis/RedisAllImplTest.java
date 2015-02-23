@@ -1,4 +1,8 @@
-package io.leopard.data4j.redis;
+package io.leopard.redis;
+
+import io.leopard.redis.Redis;
+import io.leopard.redis.RedisAllImpl;
+import io.leopard.redis.RedisMemoryImpl;
 
 import java.util.List;
 

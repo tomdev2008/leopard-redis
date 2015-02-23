@@ -1,4 +1,4 @@
-package io.leopard.data4j.redis;
+package io.leopard.redis;
 
 import io.leopard.data4j.redis.util.IJedisPool;
 import io.leopard.data4j.redis.util.RedisBackup;

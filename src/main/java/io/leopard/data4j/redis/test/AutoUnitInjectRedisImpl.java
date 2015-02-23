@@ -1,7 +1,7 @@
 package io.leopard.data4j.redis.test;
 
 import io.leopard.autounit.inject.AbstractInject;
-import io.leopard.data4j.redis.Redis;
+import io.leopard.redis.Redis;
 
 import java.lang.reflect.Field;
 

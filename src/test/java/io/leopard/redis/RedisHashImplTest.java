@@ -1,6 +1,11 @@
-package io.leopard.data4j.redis;
+package io.leopard.redis;
 
-import io.leopard.data4j.redis.util.RedisUtil;
+import io.leopard.redis.DefaultHashType;
+import io.leopard.redis.LongHashType;
+import io.leopard.redis.Redis;
+import io.leopard.redis.RedisHashImpl;
+import io.leopard.redis.RedisMemoryImpl;
+import io.leopard.redis.StringHashType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,35 +20,31 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.Tuple;
 import redis.clients.jedis.ZParams;
 
-public class RedisMemoryImplTest {
-	private RedisMemoryImpl redis = new RedisMemoryImpl();
+public class RedisHashImplTest {
+
+	private RedisMemoryImpl redisMemoryImpl = Mockito.spy(new RedisMemoryImpl());
+	protected RedisHashImpl redis = newInstance();
+
 	private final String key = "key";
 
-	@Test
-	public void mget() {
-		this.redis.set("key1", "value1");
-		this.redis.set("key2", "value2");
-		Assert.assertEquals("[value1, value2]", redis.mget("key1", "key2").toString());
-	}
-
-	@Test
-	public void returnResource() {
-		try {
-			redis.returnResource(null);
-			Assert.fail("怎么没有抛异常?");
-		}
-		catch (UnsupportedOperationException e) {
-
-		}
+	public RedisHashImpl newInstance() {
+		RedisHashImpl redisHashImpl = new RedisHashImpl();
+		redisHashImpl.redisList = new Redis[] { redisMemoryImpl };
+		return redisHashImpl;
 	}
 
 	@Before
 	public void before() {
 		redis.del("key");
+	}
+
+	@Test
+	public void setMaxActive() {
+		redis.setMaxActive(1);
+		Assert.assertEquals(1, redis.maxActive);
 	}
 
 	@Test
@@ -74,31 +75,29 @@ public class RedisMemoryImplTest {
 	}
 
 	@Test
-	public void set() {
+	public void set() throws InterruptedException {
 		this.redis.set(key, "value");
 		Assert.assertEquals("value", this.redis.get(key));
 
-		List<String> keyList = new ArrayList<String>();
-		keyList.add("key1");
-		keyList.add("key2");
-
-		List<String> valueList = new ArrayList<String>();
-		valueList.add("value1");
-		valueList.add("value2");
-
-		// List<String> keyList = ListUtil.makeList("key1,key2");
-		// List<String> valueList = ListUtil.makeList("value1,value2");
-		redis.set(keyList, valueList);
-		Assert.assertEquals("value1", this.redis.get("key1"));
-		Assert.assertEquals("value2", this.redis.get("key2"));
-
+		this.redis.set("key1", "value", 1);
+		Assert.assertEquals("value", this.redis.get("key1"));
+		// ThreadUtil.sleep(1100);
+		Thread.sleep(1100);
+		Assert.assertNull(this.redis.get("key1"));
 	}
 
 	@Test
 	public void set2() {
-		this.redis.set(key, "value", 1);
-		Assert.assertEquals("value", this.redis.get(key));
+		try {
+			List<String> list = new ArrayList<String>();
+			list.add("a");
+			list.add("b");
+			redis.set(list, null);
+			Assert.fail("怎么没有抛异常?");
+		}
+		catch (UnsupportedOperationException e) {
 
+		}
 	}
 
 	@Test
@@ -121,21 +120,6 @@ public class RedisMemoryImplTest {
 	public void exists() {
 		redis.set(key, "value");
 		Assert.assertTrue(redis.exists(key));
-
-		redis.zadd("key1", 1, "member");
-		Assert.assertTrue(redis.exists("key1"));
-
-		redis.sadd("key2", "members");
-		Assert.assertTrue(redis.exists("key2"));
-
-		redis.hset("key3", "field", "value");
-		Assert.assertTrue(redis.exists("key3"));
-
-		redis.lpush("key4", "strings");
-		Assert.assertTrue(redis.exists("key4"));
-		Assert.assertFalse(redis.exists("key5"));
-
-		this.redis.del(key, "key1", "key2", "key3", "key4", "key5");
 	}
 
 	@Test
@@ -155,8 +139,15 @@ public class RedisMemoryImplTest {
 		Assert.assertEquals(1L, (long) this.redis.hset(key, "field1", "value"));
 		Assert.assertEquals(0L, (long) this.redis.hset(key, "field1", "value2"));
 		Assert.assertEquals("value2", this.redis.hget(key, "field1"));
-		Assert.assertEquals(1L, (long) this.redis.hset(key, 2, "value"));
+		Assert.assertEquals(1L, (long) this.redis.hset(key, "field2", "value"));
 
+	}
+
+	@Test
+	public void hset2() {
+		Assert.assertEquals(1L, (long) this.redis.hset(key, 1, "value"));
+		Assert.assertEquals("value", this.redis.hget(key, 1));
+		Assert.assertEquals(1, this.redis.hdel(key, 1).intValue());
 	}
 
 	@Test
@@ -183,9 +174,6 @@ public class RedisMemoryImplTest {
 		Assert.assertEquals(1L, (long) this.redis.hsetnx(key, "field1", "value1"));
 		Assert.assertEquals(1L, (long) this.redis.hdel(key, "field1"));
 
-		Assert.assertEquals(1L, (long) this.redis.hset(key, 2, "value2"));
-
-		Assert.assertEquals(1L, (long) this.redis.hdel(key, 2));
 	}
 
 	@Test
@@ -215,13 +203,6 @@ public class RedisMemoryImplTest {
 		Assert.assertEquals(2, map.size());
 		Assert.assertEquals("field1,field2", StringUtils.join(map.keySet(), ","));
 		Assert.assertEquals("value1,value2", StringUtils.join(map.values(), ","));
-	}
-
-	@Test
-	public void zincrby() {
-		Assert.assertEquals(1D, this.redis.zincrby(key, 1, "member1"), 0);
-		Assert.assertEquals(2D, this.redis.zincrby(key, 1, "member1"), 0);
-
 	}
 
 	@Test
@@ -266,18 +247,6 @@ public class RedisMemoryImplTest {
 		Assert.assertEquals("two,one", StringUtils.join(redis.zrevrangeByScore(key, "2", "1", 0, 10), ","));
 		Assert.assertEquals("two,one", StringUtils.join(redis.zrevrangeByScore(key, 2, 1), ","));
 		Assert.assertEquals("two,one", StringUtils.join(redis.zrevrangeByScore(key, "2", "1"), ","));
-	}
-
-	@Test
-	public void zrangeByScore() {
-		this.redis.zadd(key, 1, "one");
-		this.redis.zadd(key, 2, "two");
-		this.redis.zadd(key, 3, "three");
-
-		Assert.assertEquals("one,two,three", StringUtils.join(redis.zrangeByScore(key, 0, -1), ","));
-		Assert.assertEquals("one,two,three", StringUtils.join(redis.zrangeByScore(key, "0", "-1"), ","));
-		Assert.assertEquals("one,two,three", StringUtils.join(redis.zrangeByScore(key, "0", "-1", 0, 10), ","));
-		Assert.assertEquals("one,two,three", StringUtils.join(redis.zrangeByScore(key, 0, -1, 0, 10), ","));
 	}
 
 	@Test
@@ -356,41 +325,26 @@ public class RedisMemoryImplTest {
 		Assert.assertEquals("Hello Redis", this.redis.get(key));
 	}
 
-	@Test
-	public void zinterstore() {
-		redis.zadd("zset1", 1, "one");
-		redis.zadd("zset1", 2, "two");
-		redis.zadd("zset2", 1, "one");
-		redis.zadd("zset2", 2, "two");
-		redis.zadd("zset2", 3, "three");
-
-		this.redis.zinterstore(key, "zset1", "zset2");
-		Set<Tuple> set = this.redis.zrangeWithScores(key, 0, -1);
-
-		// Json.print(set, "set");
-
-		Assert.assertEquals("one,two", StringUtils.join(RedisUtil.tupleToString(set), ","));
-		Assert.assertEquals("2.0,4.0", StringUtils.join(RedisUtil.tupleToScores(set), ","));
-	}
-
-	@Test
-	public void zinterstore2() {
-		redis.zadd("zset1", 1, "one");
-		redis.zadd("zset1", 2, "two");
-		redis.zadd("zset2", 1, "one");
-		redis.zadd("zset2", 2, "two");
-		redis.zadd("zset2", 3, "three");
-
-		ZParams params = new ZParams().aggregate(ZParams.Aggregate.SUM);
-		params.weights(2, 3);
-		this.redis.zinterstore(key, params, "zset1", "zset2");
-		Set<Tuple> set = this.redis.zrangeWithScores(key, 0, -1);
-
-		// Json.print(set, "set");
-
-		Assert.assertEquals("one,two", StringUtils.join(RedisUtil.tupleToString(set), ","));
-		Assert.assertEquals("5.0,10.0", StringUtils.join(RedisUtil.tupleToScores(set), ","));
-	}
+	// @Test
+	// public void zinterstore() {
+	// redis.zadd("zset1", 1, "one");
+	// redis.zadd("zset1", 2, "two");
+	// redis.zadd("zset2", 1, "one");
+	// redis.zadd("zset2", 2, "two");
+	// redis.zadd("zset2", 3, "three");
+	//
+	// ZParams params = new ZParams().aggregate(ZParams.Aggregate.SUM);
+	// params.weights(2, 3);
+	// this.redis.zinterstore(key, params, "zset1", "zset2");
+	// Set<Tuple> set = this.redis.zrangeWithScores(key, 0, -1);
+	//
+	// Json.print(set, "set");
+	//
+	// Assert.assertEquals("one,two",
+	// StringUtils.join(RedisUtil.tupleToString(set), ","));
+	// Assert.assertEquals("5.0,10.0",
+	// StringUtils.join(RedisUtil.tupleToScores(set), ","));
+	// }
 
 	@Test
 	public void zParams() {
@@ -425,9 +379,6 @@ public class RedisMemoryImplTest {
 		this.redis.zadd(key, 3, "three");
 
 		Assert.assertEquals(1L, this.redis.zrem(key, "one"), 0);
-
-		this.redis.zadd(key, 3, 1);
-		Assert.assertEquals(1L, this.redis.zrem(key, 1), 0);
 	}
 
 	@Test
@@ -439,18 +390,18 @@ public class RedisMemoryImplTest {
 		Assert.assertEquals("2", redis.hget("key", "field"));
 	}
 
-	@Test
-	public void sdiff() {
-		redis.del("key1", "key2", "key3");
-		redis.sadd("key1", "a", "b", "c");
-		redis.sadd("key2", "c", "d", "e");
-		// redis.sadd("key3", "c", "a", "g");
-		Set<String> set = redis.sdiff("key1", "key2");
-		System.out.println("set:" + set);
-		Assert.assertEquals(2, set.size());
-		Assert.assertTrue(set.contains("a"));
-		Assert.assertTrue(set.contains("b"));
-	}
+	// @Test
+	// public void sdiff() {
+	// redis.del("key1", "key2", "key3");
+	// redis.sadd("key1", "a", "b", "c");
+	// redis.sadd("key2", "c", "d", "e");
+	// // redis.sadd("key3", "c", "a", "g");
+	// Set<String> set = redis.sdiff("key1", "key2");
+	// System.out.println("set:" + set);
+	// Assert.assertEquals(2, set.size());
+	// Assert.assertTrue(set.contains("a"));
+	// Assert.assertTrue(set.contains("b"));
+	// }
 
 	@Test
 	public void sadd() {
@@ -461,8 +412,7 @@ public class RedisMemoryImplTest {
 
 	@Test
 	public void get() {
-		this.redis.set(key, "value");
-		Assert.assertEquals("value", redis.get(key));
+		// AUTO
 	}
 
 	@Test
@@ -482,9 +432,22 @@ public class RedisMemoryImplTest {
 	public void zadd() {
 		Assert.assertEquals(1L, (long) redis.zadd(key, 1, "member1"));
 		Assert.assertEquals(0L, (long) redis.zadd(key, 1, "member1"));
-		Assert.assertEquals(1L, (long) redis.zadd(key, 1, 1));
 
-		Assert.assertEquals(2, redis.zcard(key).intValue());
+		Assert.assertEquals(1, redis.zcard(key).intValue());
+	}
+
+	@Test
+	public void zadd5() {
+		Mockito.doReturn(null).when(redisMemoryImpl).zadd(key, (Map<String, Double>) null);
+		Assert.assertNull(redis.zadd(key, null));
+	}
+
+	@Test
+	public void zadd4() {
+		Assert.assertEquals(1L, (long) redis.zadd(key, 1, 1));
+		Assert.assertEquals(1, redis.zcard(key).intValue());
+		redis.zrem(key, 1);
+		Assert.assertEquals(0, redis.zcard(key).intValue());
 	}
 
 	@Test
@@ -516,7 +479,7 @@ public class RedisMemoryImplTest {
 	// Map<String, Double> scoreMembers = new LinkedHashMap<String, Double>();
 	// scoreMembers.put("member1", 1D);
 	// scoreMembers.put("member2", 2D);
-	// Assert.assertEquals(2, redis.zadd(key, scoreMembers).intValue());
+	// Assert.assertEquals(2, redis.zadd2(key, scoreMembers).intValue());
 	// Assert.assertEquals(2, redis.zcard(key).intValue());
 	// }
 
@@ -608,19 +571,9 @@ public class RedisMemoryImplTest {
 	}
 
 	@Test
-	public void append() {
-		Assert.assertFalse(redis.exists(key));
-		Assert.assertEquals(5, redis.append(key, "Hello").intValue());
-		Assert.assertEquals(11, redis.append(key, " World").intValue());
-		Assert.assertEquals("Hello World", redis.get(key));
-
-		Assert.assertTrue(redis.append(key, " xxx", 1));
-	}
-
-	@Test
-	public void append2() {
+	public void sdiff() {
 		try {
-			redis.append((List<String>) null, (List<String>) null, 1);
+			redis.sdiff("set1", "set2");
 			Assert.fail("怎么没有抛异常?");
 		}
 		catch (UnsupportedOperationException e) {
@@ -629,26 +582,9 @@ public class RedisMemoryImplTest {
 	}
 
 	@Test
-	public void getrange() {
-		Assert.assertNull(redis.getrange(key, 10, 100));
-		redis.set(key, "This is a string");
-		Assert.assertEquals("This", redis.getrange(key, 0, 3));
-		Assert.assertEquals("ing", redis.getrange(key, -3, -1));
-		Assert.assertEquals("This is a string", redis.getrange(key, 0, -1));
-		Assert.assertEquals("string", redis.getrange(key, 10, 100));
-	}
-
-	@Test
-	public void getSet() {
-		this.redis.incr(key);
-		redis.getSet(key, "0");
-		Assert.assertEquals("0", redis.get(key));
-	}
-
-	@Test
-	public void dbSize() {
+	public void subscribe() {
 		try {
-			redis.dbSize();
+			redis.subscribe(null, "channel1");
 			Assert.fail("怎么没有抛异常?");
 		}
 		catch (UnsupportedOperationException e) {
@@ -657,9 +593,9 @@ public class RedisMemoryImplTest {
 	}
 
 	@Test
-	public void getUsedMemory() {
+	public void psubscribe() {
 		try {
-			redis.getUsedMemory();
+			redis.psubscribe(null, "patterns");
 			Assert.fail("怎么没有抛异常?");
 		}
 		catch (UnsupportedOperationException e) {
@@ -668,31 +604,9 @@ public class RedisMemoryImplTest {
 	}
 
 	@Test
-	public void info() {
+	public void publish() {
 		try {
-			redis.info();
-			Assert.fail("怎么没有抛异常?");
-		}
-		catch (UnsupportedOperationException e) {
-
-		}
-	}
-
-	@Test
-	public void multi() {
-		try {
-			redis.multi();
-			Assert.fail("怎么没有抛异常?");
-		}
-		catch (UnsupportedOperationException e) {
-
-		}
-	}
-
-	@Test
-	public void getResource() {
-		try {
-			redis.getResource();
+			redis.publish("channel", "message");
 			Assert.fail("怎么没有抛异常?");
 		}
 		catch (UnsupportedOperationException e) {
@@ -712,9 +626,9 @@ public class RedisMemoryImplTest {
 	}
 
 	@Test
-	public void linsert() {
+	public void save() {
 		try {
-			redis.linsert(key, null, "pivot", "value");
+			redis.save();
 			Assert.fail("怎么没有抛异常?");
 		}
 		catch (UnsupportedOperationException e) {
@@ -723,16 +637,9 @@ public class RedisMemoryImplTest {
 	}
 
 	@Test
-	public void sort() {
+	public void bgsave() {
 		try {
-			redis.sort(key);
-			Assert.fail("怎么没有抛异常?");
-		}
-		catch (UnsupportedOperationException e) {
-
-		}
-		try {
-			redis.sort(key, null);
+			redis.bgsave();
 			Assert.fail("怎么没有抛异常?");
 		}
 		catch (UnsupportedOperationException e) {
@@ -741,9 +648,9 @@ public class RedisMemoryImplTest {
 	}
 
 	@Test
-	public void type() {
+	public void bgrewriteaof() {
 		try {
-			redis.type(key);
+			redis.bgrewriteaof();
 			Assert.fail("怎么没有抛异常?");
 		}
 		catch (UnsupportedOperationException e) {
@@ -752,9 +659,9 @@ public class RedisMemoryImplTest {
 	}
 
 	@Test
-	public void expireAt() {
+	public void evalAssertSha() {
 		try {
-			redis.expireAt(key, 1);
+			redis.evalAssertSha("sha", "script");
 			Assert.fail("怎么没有抛异常?");
 		}
 		catch (UnsupportedOperationException e) {
@@ -763,9 +670,9 @@ public class RedisMemoryImplTest {
 	}
 
 	@Test
-	public void setbit() {
+	public void evalReturnSha() {
 		try {
-			redis.setbit(key, 1, true);
+			redis.evalReturnSha("script");
 			Assert.fail("怎么没有抛异常?");
 		}
 		catch (UnsupportedOperationException e) {
@@ -774,14 +681,271 @@ public class RedisMemoryImplTest {
 	}
 
 	@Test
-	public void getbit() {
+	public void evalsha() {
 		try {
-			redis.getbit(key, 1);
+			redis.evalsha("script");
 			Assert.fail("怎么没有抛异常?");
 		}
 		catch (UnsupportedOperationException e) {
 
 		}
+		try {
+			redis.evalsha("sha1", 1, "params");
+			Assert.fail("怎么没有抛异常?");
+		}
+		catch (UnsupportedOperationException e) {
+
+		}
+		try {
+			redis.evalsha("sha1", (List<String>) null, (List<String>) null);
+			Assert.fail("怎么没有抛异常?");
+		}
+		catch (UnsupportedOperationException e) {
+
+		}
+	}
+
+	@Test
+	public void eval() {
+		try {
+			redis.eval("script");
+			Assert.fail("怎么没有抛异常?");
+		}
+		catch (UnsupportedOperationException e) {
+
+		}
+		try {
+			redis.eval("script", 1, "params");
+			Assert.fail("怎么没有抛异常?");
+		}
+		catch (UnsupportedOperationException e) {
+
+		}
+	}
+
+	@Test
+	public void zunionStoreInJava() {
+		try {
+			redis.zunionStoreInJava("set1", "set2");
+			Assert.fail("怎么没有抛异常?");
+		}
+		catch (UnsupportedOperationException e) {
+
+		}
+	}
+
+	@Test
+	public void zunionStoreByScoreInJava() {
+		try {
+			redis.zunionStoreByScoreInJava(1, 2, "set1", "set2");
+			Assert.fail("怎么没有抛异常?");
+		}
+		catch (UnsupportedOperationException e) {
+
+		}
+	}
+
+	@Test
+	public void getResource() {
+		try {
+			redis.getResource();
+			Assert.fail("怎么没有抛异常?");
+		}
+		catch (UnsupportedOperationException e) {
+
+		}
+	}
+
+	@Test
+	public void multi() {
+		try {
+			redis.multi();
+			Assert.fail("怎么没有抛异常?");
+		}
+		catch (UnsupportedOperationException e) {
+
+		}
+	}
+
+	@Test
+	public void flushDB() {
+		try {
+			redis.flushDB();
+			Assert.fail("怎么没有抛异常?");
+		}
+		catch (UnsupportedOperationException e) {
+
+		}
+	}
+
+	@Test
+	public void info() {
+		try {
+			redis.info();
+			Assert.fail("怎么没有抛异常?");
+		}
+		catch (UnsupportedOperationException e) {
+
+		}
+	}
+
+	@Test
+	public void getUsedMemory() {
+		try {
+			redis.getUsedMemory();
+			Assert.fail("怎么没有抛异常?");
+		}
+		catch (UnsupportedOperationException e) {
+
+		}
+	}
+
+	@Test
+	public void dbSize() {
+		try {
+			redis.dbSize();
+			Assert.fail("怎么没有抛异常?");
+		}
+		catch (UnsupportedOperationException e) {
+
+		}
+	}
+
+	@Test
+	public void flushAll() {
+		try {
+			redis.flushAll();
+			Assert.fail("怎么没有抛异常?");
+		}
+		catch (UnsupportedOperationException e) {
+
+		}
+	}
+
+	@Test
+	public void append() {
+		redis.append("key", "Hello");
+		redis.append("key", " World", 1);
+		Assert.assertEquals("Hello World", redis.get("key"));
+		try {
+			redis.append((List<String>) null, (List<String>) null, 1);
+			Assert.fail("怎么没有抛异常?");
+		}
+		catch (UnsupportedOperationException e) {
+
+		}
+	}
+
+	@Test
+	public void returnResource() {
+		try {
+			redis.returnResource(null);
+			Assert.fail("怎么没有抛异常?");
+		}
+		catch (UnsupportedOperationException e) {
+
+		}
+	}
+
+	@Test
+	public void zinterstore() {
+		try {
+			redis.zinterstore("dstkey", "set1", "set2");
+			Assert.fail("怎么没有抛异常?");
+		}
+		catch (UnsupportedOperationException e) {
+
+		}
+		try {
+			redis.zinterstore("dstkey", (ZParams) null, "sets");
+			Assert.fail("怎么没有抛异常?");
+		}
+		catch (UnsupportedOperationException e) {
+
+		}
+	}
+
+	@Test
+	public void keys() {
+		try {
+			redis.keys("pattern");
+			Assert.fail("怎么没有抛异常?");
+		}
+		catch (UnsupportedOperationException e) {
+
+		}
+	}
+
+	@Test
+	public void zunionstore() {
+		try {
+			redis.zunionstore("dstkey", "set1", "set2");
+			Assert.fail("怎么没有抛异常?");
+		}
+		catch (UnsupportedOperationException e) {
+
+		}
+	}
+
+	@Test
+	public void getServerInfo() {
+		try {
+			redis.getServerInfo();
+			Assert.fail("怎么没有抛异常?");
+		}
+		catch (UnsupportedOperationException e) {
+
+		}
+	}
+
+	@Test
+	public void setTimeout() {
+		redis.setTimeout(1);
+		Assert.assertEquals(1, redis.timeout);
+	}
+
+	@Test
+	public void setServerList() {
+		redis.setServerList(new String[] { "a", "b" });
+		// Assert.assertEquals("a,b", StringUtils.join(redis.serverList, ","));
+
+		redis.init();
+
+		Assert.assertEquals(2, redis.getRedisList().length);
+		redis.destroy();
+	}
+
+	@Test
+	public void getHashTypeClassName() {
+		Assert.assertEquals(StringHashType.class.getName(), redis.getHashTypeClassName("string"));
+		Assert.assertEquals(LongHashType.class.getName(), redis.getHashTypeClassName("long"));
+		Assert.assertEquals(DefaultHashType.class.getName(), redis.getHashTypeClassName("default"));
+		Assert.assertEquals(DefaultHashType.class.getName(), redis.getHashTypeClassName(""));
+		Assert.assertEquals("com.duowan.HashTypeImpl", redis.getHashTypeClassName("com.duowan.HashTypeImpl"));
+	}
+
+	@Test
+	public void setHashType() {
+		redis.setHashType("string");
+		Assert.assertTrue(redis.hashType instanceof StringHashType);
+	}
+
+	@Test
+	public void expire() {
+		redis.expire(key, 1);
+	}
+
+	@Test
+	public void ttl() {
+		Mockito.doReturn(1L).when(redisMemoryImpl).ttl(key);
+		Assert.assertEquals(1, redis.ttl(key).intValue());
+	}
+
+	@Test
+	public void getSet() {
+		this.redis.incr(key);
+		redis.getSet(key, "0");
+		Assert.assertEquals("0", redis.get(key));
 	}
 
 	@Test
@@ -792,6 +956,168 @@ public class RedisMemoryImplTest {
 
 		Assert.assertEquals(1, redis.srem(key, "one").intValue());
 		Assert.assertEquals(0, redis.srem(key, "four").intValue());
+	}
+
+	@Test
+	public void type() {
+		Mockito.doReturn("type").when(redisMemoryImpl).type(key);
+		Assert.assertEquals("type", redis.type(key));
+	}
+
+	@Test
+	public void expireAt() {
+		Mockito.doReturn(1L).when(redisMemoryImpl).expireAt(key, 1);
+		Assert.assertEquals(1, redis.expireAt(key, 1).intValue());
+	}
+
+	@Test
+	public void setbit() {
+		Mockito.doReturn(true).when(redisMemoryImpl).setbit(key, 1, true);
+		Assert.assertEquals(true, redis.setbit(key, 1, true));
+	}
+
+	@Test
+	public void getbit() {
+		Mockito.doReturn(true).when(redisMemoryImpl).getbit(key, 1);
+		Assert.assertEquals(true, redis.getbit(key, 1));
+
+	}
+
+	@Test
+	public void getrange() {
+		redis.set(key, "This is a string");
+		Assert.assertEquals("This", redis.getrange(key, 0, 3));
+		Assert.assertEquals("ing", redis.getrange(key, -3, -1));
+		Assert.assertEquals("This is a string", redis.getrange(key, 0, -1));
+		Assert.assertEquals("string", redis.getrange(key, 10, 100));
+	}
+
+	@Test
+	public void zrangeByScore() {
+		this.redis.zadd(key, 1, "one");
+		this.redis.zadd(key, 2, "two");
+		this.redis.zadd(key, 3, "three");
+
+		Assert.assertEquals("one,two,three", StringUtils.join(redis.zrangeByScore(key, 0, -1), ","));
+		Assert.assertEquals("one,two,three", StringUtils.join(redis.zrangeByScore(key, "0", "-1"), ","));
+		Assert.assertEquals("one,two,three", StringUtils.join(redis.zrangeByScore(key, "0", "-1", 0, 10), ","));
+		Assert.assertEquals("one,two,three", StringUtils.join(redis.zrangeByScore(key, 0, -1, 0, 10), ","));
+	}
+
+	@Test
+	public void del() {
+		this.redis.set("key1", "value1");
+		this.redis.set("key2", "value2");
+		this.redis.set("key3", "value3");
+		redis.del("key1", "key2", "key3");
+		Assert.assertFalse(redis.exists("key1"));
+		Assert.assertFalse(redis.exists("key2"));
+		Assert.assertFalse(redis.exists("key3"));
+	}
+
+	@Test
+	public void mget() {
+		this.redis.set("key1", "value1");
+		this.redis.set("key2", "value2");
+		this.redis.set("key3", "value3");
+
+		List<String> list = redis.mget("key1", "key2", "key3");
+
+		Assert.assertEquals("[value1, value2, value3]", list.toString());
+	}
+
+	@Test
+	public void zremrangeByScore() {
+		Assert.assertNull(redis.zremrangeByScore(key, 0, 1));
+		Assert.assertNull(redis.zremrangeByScore(key, "0", "1"));
+	}
+
+	@Test
+	public void zremrangeByRank() {
+		Assert.assertNull(redis.zremrangeByRank(key, 0, 1));
+	}
+
+	@Test
+	public void zrevrangeByScoreWithScores() {
+		Assert.assertNull(redis.zrevrangeByScoreWithScores(key, 1, 0));
+		Assert.assertNull(redis.zrevrangeByScoreWithScores(key, "1", "0"));
+		Assert.assertNull(redis.zrevrangeByScoreWithScores(key, 1, 0, 0, 10));
+		Assert.assertNull(redis.zrevrangeByScoreWithScores(key, "1", "0", 0, 10));
+
+	}
+
+	@Test
+	public void zrangeByScoreWithScores() {
+		Assert.assertNull(redis.zrangeByScoreWithScores(key, 0, 10));
+		Assert.assertNull(redis.zrangeByScoreWithScores(key, "0", "10"));
+		Assert.assertNull(redis.zrangeByScoreWithScores(key, 0, 10, 0, 10));
+		Assert.assertNull(redis.zrangeByScoreWithScores(key, "0", "10", 0, 10));
+	}
+
+	@Test
+	public void sort() {
+		Mockito.doReturn(null).when(redisMemoryImpl).sort(key);
+		Assert.assertNull(redis.sort(key));
+		Mockito.doReturn(null).when(redisMemoryImpl).sort(key, null);
+		Assert.assertNull(redis.sort(key, null));
+	}
+
+	@Test
+	public void linsert() {
+		Mockito.doReturn(1L).when(redisMemoryImpl).linsert(key, null, "pivot", "value");
+		Assert.assertEquals(1L, (long) redis.linsert(key, null, "pivot", "value"));
+	}
+
+	@Test
+	public void decrBy() {
+		redis.decrBy(key, 2);
+		Assert.assertEquals("-2", redis.get(key));
+	}
+
+	@Test
+	public void zincrby() {
+		Assert.assertEquals(1D, this.redis.zincrby(key, 1, "member1"), 0);
+		Assert.assertEquals(2D, this.redis.zincrby(key, 1, "member1"), 0);
+	}
+
+	@Test
+	public void incrBy() {
+		redis.incrBy(key, 2);
+		Assert.assertEquals("2", redis.get(key));
+	}
+
+	@Test
+	public void substr() {
+		Mockito.doReturn(null).when(redisMemoryImpl).substr(key, 0, 1);
+		Assert.assertNull(redis.substr(key, 0, 1));
+	}
+
+	@Test
+	public void llen() {
+		Assert.assertEquals(1, redis.lpush(key, "World").intValue());
+		Assert.assertEquals(2, redis.lpush(key, "Hello").intValue());
+		Assert.assertEquals(2, redis.llen(key).intValue());
+	}
+
+	@Test
+	public void lindex() {
+		Assert.assertEquals(1, redis.rpush(key, "World").intValue());
+		Assert.assertEquals(2, redis.rpush(key, "Hello").intValue());
+
+		Assert.assertEquals("Hello", redis.lindex(key, 0));
+		Assert.assertEquals("World", redis.lindex(key, -1));
+		Assert.assertNull(redis.lindex(key, 3));
+	}
+
+	@Test
+	public void lset() {
+		Assert.assertEquals(1, redis.rpush(key, "one").intValue());
+		Assert.assertEquals(2, redis.rpush(key, "two").intValue());
+		Assert.assertEquals(3, redis.rpush(key, "three").intValue());
+		Assert.assertEquals("OK", redis.lset(key, 0, "four"));
+		Assert.assertEquals("[four, two, three]", redis.lrange(key, 0, -1).toString());
+		Assert.assertEquals("OK", redis.lset(key, -2, "five"));
+		Assert.assertEquals("[four, five, three]", redis.lrange(key, 0, -1).toString());
 	}
 
 	@Test
@@ -827,273 +1153,14 @@ public class RedisMemoryImplTest {
 	}
 
 	@Test
-	public void llen() {
-		Assert.assertEquals(1, redis.lpush(key, "World").intValue());
-		Assert.assertEquals(2, redis.lpush(key, "Hello").intValue());
-		Assert.assertEquals(2, redis.llen(key).intValue());
+	public void lrem() {
+		// AUTO
 	}
 
-	@Test
-	public void lset() {
-		Assert.assertEquals(1, redis.rpush(key, "one").intValue());
-		Assert.assertEquals(2, redis.rpush(key, "two").intValue());
-		Assert.assertEquals(3, redis.rpush(key, "three").intValue());
-		Assert.assertEquals("OK", redis.lset(key, 0, "four"));
-		Assert.assertEquals("[four, two, three]", redis.lrange(key, 0, -1).toString());
-		Assert.assertEquals("OK", redis.lset(key, -2, "five"));
-		Assert.assertEquals("[four, five, three]", redis.lrange(key, 0, -1).toString());
-	}
-
-	@Test
-	public void lindex() {
-		Assert.assertEquals(1, redis.rpush(key, "World").intValue());
-		Assert.assertEquals(2, redis.rpush(key, "Hello").intValue());
-
-		Assert.assertEquals("Hello", redis.lindex(key, 0));
-		Assert.assertEquals("World", redis.lindex(key, -1));
-		Assert.assertNull(redis.lindex(key, 3));
-	}
-
-	@Test
-	public void substr() {
-		try {
-			redis.substr(key, 0, 1);
-			Assert.fail("怎么没有抛异常?");
-		}
-		catch (UnsupportedOperationException e) {
-
-		}
-	}
-
-	@Test
-	public void eval() {
-		try {
-			redis.eval("script");
-			Assert.fail("怎么没有抛异常?");
-		}
-		catch (UnsupportedOperationException e) {
-
-		}
-		try {
-			redis.eval("script", 1, "params");
-			Assert.fail("怎么没有抛异常?");
-		}
-		catch (UnsupportedOperationException e) {
-
-		}
-	}
-
-	@Test
-	public void evalsha() {
-		try {
-			redis.evalsha("script");
-			Assert.fail("怎么没有抛异常?");
-		}
-		catch (UnsupportedOperationException e) {
-
-		}
-		try {
-			redis.evalsha("sha1", 1, "params");
-			Assert.fail("怎么没有抛异常?");
-		}
-		catch (UnsupportedOperationException e) {
-
-		}
-		try {
-			redis.evalsha("sha1", (List<String>) null, (List<String>) null);
-			Assert.fail("怎么没有抛异常?");
-		}
-		catch (UnsupportedOperationException e) {
-
-		}
-	}
-
-	@Test
-	public void evalReturnSha() {
-		try {
-			redis.evalReturnSha("script");
-			Assert.fail("怎么没有抛异常?");
-		}
-		catch (UnsupportedOperationException e) {
-
-		}
-	}
-
-	@Test
-	public void evalAssertSha() {
-		try {
-			redis.evalAssertSha("sha", "script");
-			Assert.fail("怎么没有抛异常?");
-		}
-		catch (UnsupportedOperationException e) {
-
-		}
-	}
-
-	@Test
-	public void bgrewriteaof() {
-		try {
-			redis.bgrewriteaof();
-			Assert.fail("怎么没有抛异常?");
-		}
-		catch (UnsupportedOperationException e) {
-
-		}
-	}
-
-	@Test
-	public void save() {
-		try {
-			redis.save();
-			Assert.fail("怎么没有抛异常?");
-		}
-		catch (UnsupportedOperationException e) {
-
-		}
-	}
-
-	@Test
-	public void publish() {
-		// Assert.noimpl(redis).publish("channel", "message");
-		JedisPubSub jedisPubSub = Mockito.mock(JedisPubSub.class);
-		redis.subscribe(jedisPubSub, "channel");
-		redis.publish("channel", "message");
-		Mockito.verify(jedisPubSub).onMessage("channel", "message");
-	}
-
-	@Test
-	public void subscribe() {
-		// redis.subscribe(null, "channel");
-	}
-
-	@Test
-	public void psubscribe() {
-		try {
-			redis.psubscribe(null, "patterns");
-			Assert.fail("怎么没有抛异常?");
-		}
-		catch (UnsupportedOperationException e) {
-
-		}
-	}
-
-	@Test
-	public void bgsave() {
-		try {
-			redis.bgsave();
-			Assert.fail("怎么没有抛异常?");
-		}
-		catch (UnsupportedOperationException e) {
-
-		}
-	}
-
-	@Test
-	public void getServerInfo() {
-		try {
-			redis.getServerInfo();
-			Assert.fail("怎么没有抛异常?");
-		}
-		catch (UnsupportedOperationException e) {
-
-		}
-	}
-
-	@Test
-	public void flushAll() {
-		Assert.assertTrue(redis.flushAll());
-	}
-
-	@Test
-	public void flushDB() {
-		Assert.assertTrue(redis.flushDB());
-	}
-
-	@Test
-	public void incrBy() {
-		redis.incrBy(key, 2);
-		Assert.assertEquals("2", redis.get(key));
-	}
-
-	@Test
-	public void decrBy() {
-		redis.decrBy(key, 2);
-		Assert.assertEquals("-2", redis.get(key));
-	}
-
-	@Test
-	public void ttl() {
-		try {
-			redis.ttl(key);
-			Assert.fail("怎么没有抛异常?");
-		}
-		catch (UnsupportedOperationException e) {
-
-		}
-	}
-
-	@Test
-	public void init() {
-		redis.init();
-	}
-
-	@Test
-	public void destroy() {
-		redis.destroy();
-	}
-
-	@Test
-	public void keys() {
-		try {
-			redis.keys("pattern");
-			Assert.fail("怎么没有抛异常?");
-		}
-		catch (UnsupportedOperationException e) {
-
-		}
-	}
-
-	@Test
-	public void zunionStoreInJava() {
-		Assert.assertNull(redis.zunionStoreInJava("set1"));
-	}
-
-	@Test
-	public void zunionStoreByScoreInJava() {
-		Assert.assertNull(redis.zunionStoreByScoreInJava(0, 1, "sets"));
-
-	}
-
-	@Test
-	public void zunionstore() {
-		Assert.assertNull(this.redis.zunionstore(key, "zset1", "zset2"));
-	}
-
-	@Test
-	public void zremrangeByScore() {
-		Assert.assertNull(redis.zremrangeByScore(key, 0, 1));
-		Assert.assertNull(redis.zremrangeByScore(key, "0", "1"));
-	}
-
-	@Test
-	public void zremrangeByRank() {
-		Assert.assertNull(redis.zremrangeByRank(key, 0, 1));
-	}
-
-	@Test
-	public void zrevrangeByScoreWithScores() {
-		Assert.assertNull(redis.zrevrangeByScoreWithScores(key, 1, 0));
-		Assert.assertNull(redis.zrevrangeByScoreWithScores(key, "1", "0"));
-		Assert.assertNull(redis.zrevrangeByScoreWithScores(key, 1, 0, 0, 10));
-		Assert.assertNull(redis.zrevrangeByScoreWithScores(key, "1", "0", 0, 10));
-
-	}
-
-	@Test
-	public void zrangeByScoreWithScores() {
-		Assert.assertNull(redis.zrangeByScoreWithScores(key, 0, 10));
-		Assert.assertNull(redis.zrangeByScoreWithScores(key, "0", "10"));
-		Assert.assertNull(redis.zrangeByScoreWithScores(key, 0, 10, 0, 10));
-		Assert.assertNull(redis.zrangeByScoreWithScores(key, "0", "10", 0, 10));
-	}
+	// @Test
+	// public void zincrby() {
+	// Assert.assertEquals(1D, this.redis.zincrby(key, 1, "member1"), 0);
+	// Assert.assertEquals(2D, this.redis.zincrby(key, 1, "member1"), 0);
+	//
+	// }
 }

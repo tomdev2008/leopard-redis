@@ -1,4 +1,4 @@
-package io.leopard.data4j.redis;
+package io.leopard.redis;
 
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.util.StringUtils;
